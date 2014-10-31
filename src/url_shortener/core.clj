@@ -6,8 +6,14 @@
 
 (def url-mapping (atom {}))
 
+(defn has-http [url]
+  (re-find #"^https?://" url))
+
 (defn shorten-url [url]
-  (let [shortened (mod (hash url) 1000)]
+  (let [url (if (has-http url)
+              url
+              (str "http://" url))
+        shortened (mod (hash url) 1000)]
     (swap! url-mapping assoc (str shortened) url)
     shortened))
 
