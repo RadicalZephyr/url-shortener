@@ -21,12 +21,12 @@
   (GET "/" [] (response/redirect "/index.html"))
   (POST "/" [url]
         (let [short (shorten-url url)]
-          (str "We shortened your url to: " short @url-mapping)))
+          (str "We shortened your url to: " short)))
   (route/resources "/")
   (GET "/:url-id" [url-id]
        (let [url (get @url-mapping url-id)]
          (if url
            (response/redirect url)
-           (str "<h1>No redirect was found.</h1>" @url-mapping)))))
+           "<h1>No redirect was found.</h1>"))))
 
 (def app (wrap-params routes))
