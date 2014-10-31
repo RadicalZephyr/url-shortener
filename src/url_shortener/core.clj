@@ -8,7 +8,8 @@
 
 
 (defroutes app
-  (GET "/" [] "<h1>Hello Url Shortening World</h1>")
+  (GET "/" [] (response/redirect "/index.html"))
+  (route/resources "/")
   (GET "/:url-id" [url-id]
        (let [url (get @url-mapping url-id)]
          (if url
