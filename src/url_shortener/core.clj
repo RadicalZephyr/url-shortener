@@ -6,9 +6,16 @@
 
 (def url-mapping (atom {}))
 
+(defn shorten-url [url]
+  (let [shortened (mod (hash url) 1000)]
+    (swap! url-mapping assoc shortened url)
+    shortened))
+
 (defroutes routes
   (GET "/" [] (response/redirect "/index.html"))
-  (POST "/" {params :params} (str "Got a url" (pr-str params)))
+  (POST "/" [url]
+        (let [short (shorten-url url)]
+          (str "We shortened your url to: " short)))
   (route/resources "/")
   (GET "/:url-id" [url-id]
        (let [url (get @url-mapping url-id)]
