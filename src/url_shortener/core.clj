@@ -4,8 +4,7 @@
             [compojure.route :as route]))
 
 
-(def url-mapping (atom {"abcde" "http://www.google.com/search?q=thebestkittenever"}))
-
+(def url-mapping (atom {}))
 
 (defroutes app
   (GET "/" [] (response/redirect "/index.html"))
