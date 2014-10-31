@@ -8,6 +8,7 @@
 
 (defroutes app
   (GET "/" [] (response/redirect "/index.html"))
+  (POST "/" params (str "Got a url" params))
   (route/resources "/")
   (GET "/:url-id" [url-id]
        (let [url (get @url-mapping url-id)]
