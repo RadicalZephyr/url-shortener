@@ -9,12 +9,27 @@
 (defn has-http [url]
   (re-find #"^https?://" url))
 
+(defn make-url-entry [url]
+  {:url url :hit-count 0})
+
+(defn get-long-from-short-url [short-url]
+  (:url (get @url-mapping short-url)))
+
+(defn get-hit-count [short-url]
+  (:hit-count (get @url-mapping short-url)))
+
+(defn update-hit-count [url-mapping short-url]
+  (let [url-record   (get url-mapping short-url)
+        hit-count (:hit-count url-record)
+        updated-record   (assoc url-record :hit-count (inc hit-count))]
+    (assoc url-mapping short-url updated-record)))
+
 (defn shorten-url [url]
   (let [url (if (has-http url)
               url
               (str "http://" url))
         shortened (mod (hash url) 1000)]
-    (swap! url-mapping assoc (str shortened) url)
+    (swap! url-mapping assoc (str shortened) (make-url-entry url))
     shortened))
 
 (defroutes routes
