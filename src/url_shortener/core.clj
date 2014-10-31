@@ -36,7 +36,8 @@
   (GET "/" [] (response/redirect "/index.html"))
   (POST "/" [url]
         (let [short (shorten-url url)]
-          (str "We shortened your url to: " short)))
+          (format "We shortened your url to: <a href=\"/s/%s\">/s/%s</a>"
+                  short short)))
   (route/resources "/")
   (GET "/info/:short-url" [short-url]
        (let [url-map (get @url-mapping short-url)]
@@ -45,7 +46,7 @@
                    short-url (:url url-map) (:hit-count url-map))
            (str "<h1>No short url: '" short-url "' was found to "
                 "display information for.</h1>"))))
-  (GET "/:short-url" [short-url]
+  (GET "/s/:short-url" [short-url]
        (let [url-map (get @url-mapping short-url)]
          (if url-map
            (do
