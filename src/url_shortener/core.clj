@@ -12,12 +12,6 @@
 (defn make-url-entry [url]
   {:url url :hit-count 0})
 
-(defn get-long-from-short-url [short-url]
-  (:url (get @url-mapping short-url)))
-
-(defn get-hit-count [short-url]
-  (:hit-count (get @url-mapping short-url)))
-
 (defn update-hit-count [url-mapping short-url]
   (let [url-record   (get url-mapping short-url)
         hit-count (:hit-count url-record)
