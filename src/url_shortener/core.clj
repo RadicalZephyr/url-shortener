@@ -38,10 +38,19 @@
         (let [short (shorten-url url)]
           (str "We shortened your url to: " short)))
   (route/resources "/")
-  (GET "/:url-id" [url-id]
-       (let [url (get @url-mapping url-id)]
-         (if url
-           (response/redirect url)
+  (GET "/info/:short-url" [short-url]
+       (let [url-map (get @url-mapping short-url)]
+         (if url-map
+           (format "Short URL %s<br>Redirects to: %s<br>Number of hits: %d"
+                   short-url (:url url-map) (:hit-count url-map))
+           (str "<h1>No short url: '" short-url "' was found to "
+                "display information for.</h1>"))))
+  (GET "/:short-url" [short-url]
+       (let [url-map (get @url-mapping short-url)]
+         (if url-map
+           (do
+             (swap! url-mapping update-hit-count short-url)
+             (response/redirect (:url url-map)))
            "<h1>No redirect was found.</h1>"))))
 
 (def app (wrap-params routes))
