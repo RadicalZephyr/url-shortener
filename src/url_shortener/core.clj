@@ -34,7 +34,7 @@
 
 (defroutes routes
   (GET "/" [] (response/redirect "/index.html"))
-  (POST "/" [url]
+  (POST "/shorten" [url]
         (let [short (shorten-url url)]
           (format "We shortened your url to: <a href=\"/s/%s\">/s/%s</a>"
                   short short)))
