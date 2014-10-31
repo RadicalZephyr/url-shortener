@@ -9,8 +9,8 @@
 
 (defroutes app
   (GET "/" [] "<h1>Hello Url Shortening World</h1>")
-  (GET "/:id" [id]
-       (let [url (get @url-mapping id)]
-         {:status 302
-          :headers {"Location" url}
-          :body ""})))
+  (GET "/:url-id" [url-id]
+       (let [url (get @url-mapping url-id)]
+         (if url
+           (response/redirect url)
+           "<h1>No redirect was found.</h1>"))))
