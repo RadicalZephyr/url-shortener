@@ -9,7 +9,8 @@
                  [compojure "1.2.1"]]
   :plugins      [[lein-ring "0.8.13"]
                  [lein-cljsbuild "1.0.3"]]
-  :ring    {:handler url-shortener.core/app}
+  :hooks [leiningen.cljsbuild]
+  :ring  {:handler url-shortener.core/app}
   :cljsbuild {:builds [{:source-paths ["src/cljs"]
                         :compiler {:output-to "resources/public/js/main.js"
                                    :optimizations :whitespace
