@@ -3,12 +3,17 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
+
   :source-paths ["src/clj"]
+
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2371"]
-                 [compojure "1.2.1"]]
+                 [compojure "1.2.1"]
+                 [cljs-ajax "0.3.3"]]
+
   :plugins      [[lein-ring "0.8.13"]
                  [lein-cljsbuild "1.0.3"]]
+
   :hooks [leiningen.cljsbuild]
   :ring  {:handler url-shortener.core/app}
   :cljsbuild {:builds [{:source-paths ["src/cljs"]
