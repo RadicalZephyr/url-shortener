@@ -1,7 +1,6 @@
 (ns url-shortener.core
   (:require [ring.util.response :as response]
             [ring.middleware.params :refer [wrap-params]]
-            [ring.middleware.edn    :refer [wrap-edn-params]]
             [compojure.core  :as c]
             [compojure.route :as route]))
 
