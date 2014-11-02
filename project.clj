@@ -19,7 +19,8 @@
   :hooks [leiningen.cljsbuild]
   :ring  {:handler url-shortener.core/app}
   :cljsbuild {:builds [{:source-paths ["src/cljs"]
-                        :compiler {:output-to "resources/public/js/main.js"
+                        :compiler {:output-dir "resources/public/js"
+                                   :output-to "resources/public/js/main.js"
                                    :source-map "resources/public/js/main.js.map"
                                    :optimizations :whitespace
                                    :pretty-print true}}]})
