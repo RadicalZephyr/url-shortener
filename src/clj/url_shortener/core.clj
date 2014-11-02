@@ -2,7 +2,7 @@
   (:require [ring.util.response :as response]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.edn    :refer [wrap-edn-params]]
-            [compojure.core :refer [GET POST defroutes context]]
+            [compojure.core  :as c]
             [compojure.route :as route]))
 
 (def url-mapping (atom {}))
@@ -35,31 +35,32 @@
 
 (def api-routes
   (wrap-edn-params
-   (routes
-    (GET "/info/:short-url" [short-url]
-      (let [url-map (get @url-mapping short-url)]
-        (if url-map
-          (edn-response url-map)
-          (edn-response {:error "No entry found for that short url"} 404)))))))
+   (wrap-params
+    (c/routes
+     (c/GET "/info/:short-url" [short-url]
+       (let [url-map (get @url-mapping short-url)]
+         (if url-map
+           (edn-response url-map)
+           (edn-response {:error "No entry found for that short url"} 404))))))))
 
-(defroutes routes
-  (GET "/" [] (response/redirect "/index.html"))
+(c/defroutes routes
+  (c/GET "/" [] (response/redirect "/index.html"))
 
-  (context "/api/v1" []
-    (api-routes))
+  (c/context "/api/v1" req
+    (api-routes req))
 
-  (POST "/shorten" [url]
+  (c/POST "/shorten" [url]
         (let [short (shorten-url url)]
           (format "We shortened your url to: <a href=\"/s/%s\">/s/%s</a>"
                   short short)))
-  (GET "/info/:short-url" [short-url]
+  (c/GET "/info/:short-url" [short-url]
        (let [url-map (get @url-mapping short-url)]
          (if url-map
            (format "Short URL %s<br>Redirects to: %s<br>Number of hits: %d"
                    short-url (:url url-map) (:hit-count url-map))
            (str "<h1>No short url: '" short-url "' was found to "
                 "display information for.</h1>"))))
-  (GET "/s/:short-url" [short-url]
+  (c/GET "/s/:short-url" [short-url]
        (let [url-map (get @url-mapping short-url)]
          (if url-map
            (do
