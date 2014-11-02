@@ -36,6 +36,10 @@
   (c/GET "/" [] (response/redirect "/index.html"))
 
   (c/context "/api/v1" []
+    (c/POST "/shorten" [url]
+      (let [short-url (shorten-url url)]
+        (edn-response {:short-url short-url})))
+
     (c/GET "/info/:short-url" [short-url]
      (let [url-map (get @url-mapping short-url)]
        (if url-map
