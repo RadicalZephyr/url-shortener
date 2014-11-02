@@ -41,31 +41,28 @@
         (edn-response {:short-url short-url})))
 
     (c/GET "/info/:short-url" [short-url]
-     (let [url-map (get @url-mapping short-url)]
-       (if url-map
-         (edn-response url-map)
-         (edn-response {:error "No entry found for that short url"
-                        :url short-url}
-                       404)))))
+      (if-let [url-map (get @url-mapping short-url)]
+           (edn-response url-map)
+           (edn-response {:error "No entry found for that short url"
+                          :url short-url}
+                         404))))
 
   (c/POST "/shorten" [url]
         (let [short (shorten-url url)]
           (format "We shortened your url to: <a href=\"/s/%s\">/s/%s</a>"
                   short short)))
   (c/GET "/info/:short-url" [short-url]
-       (let [url-map (get @url-mapping short-url)]
-         (if url-map
+       (if-let [url-map (get @url-mapping short-url)]
            (format "Short URL %s<br>Redirects to: %s<br>Number of hits: %d"
                    short-url (:url url-map) (:hit-count url-map))
            (str "<h1>No short url: '" short-url "' was found to "
-                "display information for.</h1>"))))
+                "display information for.</h1>")))
   (c/GET "/s/:short-url" [short-url]
-       (let [url-map (get @url-mapping short-url)]
-         (if url-map
+       (if-let [url-map (get @url-mapping short-url)]
            (do
              (swap! url-mapping update-hit-count short-url)
              (response/redirect (:url url-map)))
-           "<h1>No redirect was found.</h1>")))
+           "<h1>No redirect was found.</h1>"))
   (route/resources "/"))
 
 (def app (wrap-params routes))
