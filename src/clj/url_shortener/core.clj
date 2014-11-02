@@ -1,7 +1,8 @@
 (ns url-shortener.core
   (:require [ring.util.response :as response]
             [ring.middleware.params :refer [wrap-params]]
-            [compojure.core :refer [GET POST defroutes]]
+            [ring.middleware.edn    :refer [wrap-edn-params]]
+            [compojure.core :refer [GET POST defroutes context]]
             [compojure.route :as route]))
 
 (def url-mapping (atom {}))
@@ -26,8 +27,27 @@
     (swap! url-mapping assoc (str shortened) (make-url-entry url))
     shortened))
 
+(defn edn-response [data & [status]]
+  {:status (or status 200)
+   :headers {"Content-Type" "application/edn"}
+   :body (pr-str data)})
+
+
+(def api-routes
+  (wrap-edn-params
+   (routes
+    (GET "/info/:short-url" [short-url]
+      (let [url-map (get @url-mapping short-url)]
+        (if url-map
+          (edn-response url-map)
+          (edn-response {:error "No entry found for that short url"} 404)))))))
+
 (defroutes routes
   (GET "/" [] (response/redirect "/index.html"))
+
+  (context "/api/v1" []
+    (api-routes))
+
   (POST "/shorten" [url]
         (let [short (shorten-url url)]
           (format "We shortened your url to: <a href=\"/s/%s\">/s/%s</a>"
