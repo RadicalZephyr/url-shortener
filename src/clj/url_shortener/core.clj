@@ -32,22 +32,17 @@
    :headers {"Content-Type" "application/edn"}
    :body (pr-str data)})
 
-
-(def api-routes
-  (wrap-edn-params
-   (wrap-params
-    (c/routes
-     (c/GET "/info/:short-url" [short-url]
-       (let [url-map (get @url-mapping short-url)]
-         (if url-map
-           (edn-response url-map)
-           (edn-response {:error "No entry found for that short url"} 404))))))))
-
 (c/defroutes routes
   (c/GET "/" [] (response/redirect "/index.html"))
 
-  (c/context "/api/v1" req
-    (api-routes req))
+  (c/context "/api/v1" []
+    (c/GET "/info/:short-url" [short-url]
+     (let [url-map (get @url-mapping short-url)]
+       (if url-map
+         (edn-response url-map)
+         (edn-response {:error "No entry found for that short url"
+                        :url short-url}
+                       404)))))
 
   (c/POST "/shorten" [url]
         (let [short (shorten-url url)]
